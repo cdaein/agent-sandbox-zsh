@@ -1,4 +1,4 @@
-# Agent Sandbox
+# Agent Sandbox ZSH
 
 Run AI coding agents such as Claude Code and Gemini in a Docker container to avoid exposing the whole host file system. I was worried that agents may run rogue code and ruin my machine. A few existing solutions for containerization was too complex for me so I decided to create a simple script.
 
