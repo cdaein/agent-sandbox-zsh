@@ -19,8 +19,8 @@ I set it up to support my Typescript/Nodejs projects. You can customize to meet 
 1. If the script exits successfully, run `docker compose run --rm --service-ports dev` to access the container shell.
    - The whole project directory is mounted for the container to access (read and write).
    - It should not have access to files outside the mounted paths.
-1. Once you are inside the container zsh shell (indicated by the container ID on the prompt), `npm install` and then `npm run dev -- --host` to run the Vite dev server.
-1. To open another shell inside the container, run `docker compose exec -it dev zsh`. Make sure the container IDs are the same.
+1. Assuming you are working on a JS project with Vite dev server, once you are inside the container shell (indicated by the container ID on the prompt), `npm install` and then `npm run dev -- --host` to run the dev server.
+1. To open another container shell, open a new terminal window and run `docker compose exec -it dev zsh`. You can check if the container IDs are the same.
 1. You can use any code editor from your host file system and do everything you need to do while running coding agents within the container.
 
 > Tip: Create an alias in your `.zshrc` to make it easy to use the script. For example, `alias agent-sandbox="~/<script dir>/agent-sandbox/agent-sandbox.zsh"`. Then, `exec zsh` to reload the shell. Now, from anywhere in your system, `agent-sandbox <target dir>` should work.
