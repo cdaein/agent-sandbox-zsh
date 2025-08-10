@@ -1,0 +1,8 @@
+# Use this file to build the base image agent-sandbox
+
+services:
+  agent-sandbox:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: agent-sandbox:latest

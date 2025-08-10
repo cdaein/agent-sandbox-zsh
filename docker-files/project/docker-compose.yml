@@ -1,0 +1,39 @@
+# Copy this file to each project root
+# agent-sandbox image must be already available
+
+services:
+  dev:
+    # must have agent-sandbox image built and available in Docker
+    image: agent-sandbox:latest
+    # working dir is set up in the base image agent-sandbox
+    working_dir: /project
+    ports:
+      # Vite dev server port mapping
+      - "5173:5173"
+    # set up environment variables
+    # Option 1. load env variables from the host .env
+    # (or if you set it manually here, DO NOT commit this file!!)
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    # Option 2. Create .env in project root
+    # env_file:
+    #   - .env
+    # need to create the claude directory to be able to sopy settings with apikey
+    # (doing this in base Dockerfile instead)
+    # command: sh -c "mkdir -p /root/.claude && /bin/zsh"
+    volumes:
+      # Make available the whole project (current) directory
+      - .:/project
+      # Persistent container node_modules
+      # The reason for this is some deps have different versions depending on the OS (MacOS vs. Linux container)
+      # (NOTE: make sure to include ".docker_node_modules" to ".gitignore")
+      # - ./.docker_node_modules:/project/node_modules
+      # gitconfig file
+      - ${HOME}/.gitconfig:/root/.gitconfig:ro
+      # Claude config file
+      # (NOTE: this is temporary hack b/c Claude doesn't support API key authentication and I have to sign in and create token everytime)
+      - ./.claude-settings.json:/root/.claude/settings.json
+    # Equivalent to -it
+    stdin_open: true
+    tty: true
