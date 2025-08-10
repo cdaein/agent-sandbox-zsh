@@ -20,21 +20,27 @@ RUN npm install -g @anthropic-ai/claude-code @google/gemini-cli
 ############# ZSH
 # https://github.com/ohmyzsh/ohmyzsh?tab=readme-ov-file#unattended-install
 RUN sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+
 # Clone zsh plugins
 RUN git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-/root/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
 RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-/root/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
 # Replace plugins in .zshrc
 # (avoid adding them twice)
 RUN sed -i 's/^plugins=(git)/plugins=(git zsh-autosuggestions zsh-syntax-highlighting)/' /root/.zshrc
+
 # Append the following to .zshrc 
 # (run it after installing ohmyzsh)
 RUN cat << 'EOF' >> /root/.zshrc
 # Add container hostname in red to prompt to differentiate from host session
 PROMPT="%F{red}[\$(hostname)]%f ${PROMPT}"
+
 # Add useful aliases
 alias cl="clear"
+
 # Anything else to append to .zshrc
 # (But, you can run any shell commands from host terminal as well)
+
 EOF
 
 # Create the .claude directory so I can copy settings.json
