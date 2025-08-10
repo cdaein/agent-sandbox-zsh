@@ -6,7 +6,7 @@ The script will create a reusable Docker image and a temporary Docker container 
 
 I set it up to support my Typescript/Nodejs projects. You can customize to meet different needs (See Customization section below).
 
-> IMPORTANT NOTE: Use it at your own risk. This is an experimental personal project. I take no responsibility if anything goes wrong in any possible way.
+> ⚠️ IMPORTANT NOTE: Use it at your own risk. This is an experimental personal project. I take no responsibility if anything goes wrong in any possible way.
 
 ## How to use
 
