@@ -1,6 +1,8 @@
 # Agent Sandbox
 
-Run AI coding agents such as Claude Code and Gemini in a Docker container to avoid exposing the whole host file system. I was worried that agents may run rogue code and ruin my machine. A few existing solutions for containerization was too complex for me so I decided to create a simple script. The script will create a reusable Docker image nad a temporary Docker container for each run. It only exposes the current project directory for agents to read and write code. Code editor runs on your host system to give the most flexibility. You can also switch between running the dev server inside the container or on your host system with the same source files.
+Run AI coding agents such as Claude Code and Gemini in a Docker container to avoid exposing the whole host file system. I was worried that agents may run rogue code and ruin my machine. A few existing solutions for containerization was too complex for me so I decided to create a simple script.
+
+The script will create a reusable Docker image and a temporary Docker container for each run. It only exposes the current project directory for agents to read and write code. Code editor runs on your host system to give the most flexibility. You can also switch between running the dev server inside the container or on your host system with the same source files.
 
 I set it up to support my Typescript/Nodejs projects. You can customize to meet different needs (See Customization section below).
 
@@ -34,16 +36,17 @@ This is where you include any tools you need for all your agent coding projects.
 - This is where you can create project-level configs. I use the Vite dev server and it uses the port `5173`.
 - Define any environment variables you need here. It'd be best to `export` these variables in your host and load them in instead of hard-coding the values here to reduce the potential of leaking.
 - You can customize the `volumes` and decide what parts of the host file system the container may access.
+- This file is copied to your project when the script runs, so you can edit the copy for each project.
 
 ### Rebuild Docker image
 
-If you made changes to the base image `Dockerfile`, then you will need to rebuild it. `docker image ls` to find the image name. `docker image rm <name>` to delete it.
+If you made changes to the base image `Dockerfile`, then you will need to rebuild it. First, `docker image ls` to find the image name. `docker image rm <name>` to delete it. Next time you run the script, it will rebuild.
 
 ## Quirks
 
 ### `node_modules`
 
-There are packages that install different versions depending on your OS (MacOS vs. Linux). The Docker container runs on Linux while my machine is Mac, meaning when I run `npm i` inside the container, I cannot use the same packages on my host machine (and vice versa). `npm run dev` throws an error. You can try `npm i` again and hopefully, it will install additional packages instead of wholly overriding it. But, if that fails, delete `node_modules` and run `npm i`.
+There are packages that install different versions depending on your OS (MacOS vs. Linux). The Docker container runs on Linux while my machine is Mac, meaning when I run `npm i` inside the container, I cannot use the same packages on my host machine (and vice versa). `npm run dev` throws an error. You can try `npm i` again and hopefully, it will install additional packages instead of wholly overriding it. (This worked for me.) But, if that fails, delete `node_modules` and run `npm i`.
 
 One way to get around this issue is to designate a different node_modules folder for the container. In the project `docker-compose.yml`, Uncomment the volume:
 
@@ -53,7 +56,9 @@ One way to get around this issue is to designate a different node_modules folder
       - ./.docker_node_modules:/project/node_modules
 ```
 
-When you `npm install` inside the container, the packages now go into `.docker_node_modules`. If you use Typescript, update the `tsconfig.json`:
+When you `npm install` inside the container, the packages now go into `.docker_node_modules`.
+
+If you use Typescript, also update the `tsconfig.json`:
 
 ```json
 {
