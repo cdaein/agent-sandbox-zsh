@@ -8,14 +8,31 @@ print_color() {
   echo -e "\e[${color_code}m${message}\e[0m"
 }
 
+SCRIPT_DIR="$(cd "$(dirname "${(%):-%N}")" && pwd)"
+DOCKER_BASE_DIR="$SCRIPT_DIR/docker-files/base"  # where docker-related files are located
+
+# ====== Handle subcommands ======
+if [[ "$1" == "build" ]]; then
+  echo ""
+  echo "===== Building base Docker image (no cache) ====="
+
+  if [[ ! -f "$DOCKER_BASE_DIR/docker-compose.yml" ]]; then
+    echo "$(print_color "31" "Error:") No docker-compose.yml found in $(print_color "33" "$DOCKER_BASE_DIR")"
+    exit 1
+  fi
+
+  docker-compose -f "$DOCKER_BASE_DIR/docker-compose.yml" build --no-cache
+  # docker-compose -f "$DOCKER_BASE_DIR/docker-compose.yml" build
+  echo "Docker base image rebuilt successfully."
+  exit 0
+fi
+
 # Check if target directory argument is given
 if [[ $# -ne 1 ]]; then
   echo "Usage: $(print_color "32" "$0") <target_dir>"
   exit 1
 fi
 
-SCRIPT_DIR="$(cd "$(dirname "${(%):-%N}")" && pwd)"
-DOCKER_BASE_DIR="$SCRIPT_DIR/docker-files/base"  # where docker-related files are located
 TARGET_DIR="$1"
 
 ###### Stage 1. copy files to project directory ##############################################################
