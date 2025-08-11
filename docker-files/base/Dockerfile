@@ -16,8 +16,6 @@ RUN apt-get update && apt-get install -y \
     # delete cache
     && rm -rf /var/lib/apt/lists/*
 
-# npm global packages required for the environment
-RUN npm install -g @anthropic-ai/claude-code @google/gemini-cli
 
 ############# ZSH
 # https://github.com/ohmyzsh/ohmyzsh?tab=readme-ov-file#unattended-install
@@ -43,7 +41,19 @@ alias cl="clear"
 # Anything else to append to .zshrc
 # (But, you can run any shell commands from host terminal as well)
 
+# for Cursor CLI
+export PATH="$HOME/.local/bin:$PATH"
+
 EOF
+
+# npm global packages required for the environment
+RUN npm install -g @anthropic-ai/claude-code @google/gemini-cli
+
+# Install Cursor CLI
+RUN curl https://cursor.com/install -fsS | bash
+
+# Add to PATH globally
+ENV PATH="$HOME/.local/bin:$PATH"
 
 # Create the .claude directory so I can copy settings.json
 # Without this, file copying doesn't work properly
