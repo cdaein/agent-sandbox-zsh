@@ -14,9 +14,9 @@ services:
     # Option 1. load env variables from the host .env
     # (or if you set it manually here, DO NOT commit this file!!)
     environment:
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
       - CURSOR_API_KEY=${CURSOR_API_KEY}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
     # Option 2. Create .env in project root
     # env_file:
     #   - .env

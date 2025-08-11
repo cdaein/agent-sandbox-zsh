@@ -40,7 +40,21 @@ This is where you include any tools you need for all your agent coding projects.
 
 ### Rebuild Docker image
 
-If you made changes to the base image `Dockerfile`, then you will need to rebuild it. Sometimes, caches get in the way of new builds. In that case, first, `docker image ls` to find the image name. `docker image rm <name>` to delete it. Next time you run the script, it will rebuild.
+If you made changes to the base image `Dockerfile`, then you will need to rebuild it. Sometimes, caches get in the way of new builds. You can run `<script dir>/agent-sandbox.zsh build` to build the base Docker image with no cache.
+
+## Supported Agents
+
+### Claude Code
+
+Create `ANTHROPIC_API_KEY` and add it to your host environment variables (ex. in `.zshrc`).
+
+### Cursor CLI
+
+Get your `CURSOR_API_KEY` from the user account integrations page and add it to your host environment variables (ex. in `.zshrc`).
+
+### Gemini CLI
+
+Create `GEMINI_API_KEY` and add it to your host environment variables (ex. in `.zshrc`).
 
 ## Quirks
 
