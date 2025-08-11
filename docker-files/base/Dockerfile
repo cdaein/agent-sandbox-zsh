@@ -9,7 +9,9 @@ RUN apt-get update && apt-get install -y \
     fonts-powerline \
     ffmpeg \
     git \
+    nano \
     wget \
+    vim \
     zsh \
     # delete cache
     && rm -rf /var/lib/apt/lists/*
