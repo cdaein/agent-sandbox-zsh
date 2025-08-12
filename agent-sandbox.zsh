@@ -35,6 +35,10 @@ fi
 
 TARGET_DIR="$1"
 
+
+# TODO: setup subcommand?
+#       if docker-related files are already present, instead of exiting, ask user to confirm overwriting.
+
 ###### Stage 1. copy files to project directory ##############################################################
 
 echo ""
