@@ -4,7 +4,7 @@
 
 set -e
 
-ALLOWED_DOMAINS_FILE="/etc/firewall/allowed-domains.txt"
+ALLOWED_DOMAINS_FILE="/etc/firewall-config/allowed-domains.txt"
 ALLOWED_IPS_SET="allowed_ips"
 LOG_FILE="/var/log/firewall.log"
 
