@@ -52,7 +52,6 @@ FILES_TO_COPY=(
   # REVIEW: this is a hack to avoid signing in and creating new tokens every time.
   #         hopefully Claude will support api key loading like Gemini does.
   "docker-files/project/.claude-settings.json"
-  "docker-files/project/allowed-domains.txt"
 )
 
 # Directories to copy
