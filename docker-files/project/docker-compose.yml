@@ -10,6 +10,9 @@ services:
     ports:
       # Vite dev server port mapping
       - "5173:5173"
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
     # set up environment variables
     # Option 1. load env variables from the host .env
     # (or if you set it manually here, DO NOT commit this file!!)
