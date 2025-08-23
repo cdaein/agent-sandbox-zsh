@@ -25,7 +25,7 @@ I set it up to support my Typescript/Nodejs projects. You can customize to meet 
 
 > Tip: Create an alias in your `.zshrc` to make it easy to use the script. For example, `alias agent-sandbox="~/<script dir>/agent-sandbox/agent-sandbox.zsh"`. Then, `exec zsh` to reload the shell. Now, from anywhere in your system, `agent-sandbox <target dir>` should work.
 
-## Customization
+## Script Customization
 
 ### `/docker-files/base/Dockerfile`
 
@@ -41,6 +41,14 @@ This is where you include any tools you need for all your agent coding projects.
 ### Rebuild Docker image
 
 If you made changes to the base image `Dockerfile`, then you will need to rebuild it. Sometimes, caches get in the way of new builds. You can run `<script dir>/agent-sandbox.zsh build` to build the base Docker image with no cache.
+
+## Project Customization
+
+### `<project>/firewall-config/allowed-domains.txt`
+
+Add any domains you allow the agents to access.
+
+You can also add domains within the container shell. Try `firewall --help` to get more info.
 
 ## Supported Agents
 
