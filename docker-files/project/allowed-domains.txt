@@ -1,4 +1,7 @@
 # Add domains here
 # This file is mounted into the container and can be easily updated on your host filesystem
 
-api.anthropic.com
+# Claude Code
+api.anthropic.com # Claude API endpoints
+statsig.anthropic.com # Telemetry and metrics
+sentry.io # Error reporting
