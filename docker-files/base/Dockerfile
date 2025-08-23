@@ -68,9 +68,6 @@ RUN mkdir -p /etc/firewall
 COPY firewall-setup.sh /etc/firewall/firewall-setup.sh
 RUN chmod +x /etc/firewall/firewall-setup.sh
 
-# Copy local allowed-domains.txt to container
-COPY allowed-domains.txt /etc/firewall/allowed-domains.txt
-
 # Add firewall alias
 RUN echo 'alias firewall="/etc/firewall/firewall-setup.sh"' >> /root/.zshrc
 

@@ -1,0 +1,4 @@
+# Add domains here
+# This file is mounted into the container and can be easily updated on your host filesystem
+
+api.anthropic.com

@@ -1,3 +1,0 @@
-# Add domains here
-
-api.anthropic.com
