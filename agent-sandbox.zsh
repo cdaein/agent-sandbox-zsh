@@ -8,6 +8,41 @@ print_color() {
   echo -e "\e[${color_code}m${message}\e[0m"
 }
 
+# Function to prompt user for action when file/directory already exists
+prompt_user() {
+  local dest_path="$1"
+  local item_type="$2"  # "file" or "directory"
+  
+  echo "$(print_color "33" "Warning:") $(print_color "36" "$dest_path") already exists."
+  
+  while true; do
+    echo "Choose an action:"
+    echo "  $(print_color "32" "o") - Overwrite"
+    echo "  $(print_color "32" "s") - Skip"
+    echo "  $(print_color "32" "a") - Abort (exit script)"
+    echo -n "Enter choice (o/s/a): "
+    read -r choice
+    
+    case $choice in
+      [Oo])
+        echo "Overwriting $(print_color "36" "$dest_path")..."
+        return 0  # Continue with overwrite
+        ;;
+      [Ss])
+        echo "Skipping $(print_color "36" "$dest_path")..."
+        return 1  # Skip this item
+        ;;
+      [Aa])
+        echo "Aborting..."
+        exit 1
+        ;;
+      *)
+        echo "Invalid choice. Please enter 'o', 's', or 'a'."
+        ;;
+    esac
+  done
+}
+
 SCRIPT_DIR="$(cd "$(dirname "${(%):-%N}")" && pwd)"
 DOCKER_BASE_DIR="$SCRIPT_DIR/docker-files/base"  # where docker-related files are located
 
@@ -34,10 +69,6 @@ if [[ $# -ne 1 ]]; then
 fi
 
 TARGET_DIR="$1"
-
-
-# TODO: setup subcommand?
-#       if docker-related files are already present, instead of exiting, ask user to confirm overwriting.
 
 ###### Stage 1. copy files to project directory ##############################################################
 
@@ -71,13 +102,17 @@ for file in "${FILES_TO_COPY[@]}"; do
 
   # Check if destination already exists as file or folder
   if [[ -e "$DEST_FILE" ]]; then
-    echo "$(print_color "33" "Warning:") $(print_color "36" "$DEST_FILE") already exists, exiting..."
-    exit 1
+    if prompt_user "$DEST_FILE" "file"; then
+      # User chose to overwrite
+      echo "Copying $(print_color "36" "$SRC_FILE") to $(print_color "36" "$DEST_FILE")"
+      cp "$SRC_FILE" "$DEST_FILE"
+    fi
+    # If user chose to skip, continue to next file
+  else
+    # Copy as file (explicitly specifying full dest path)
+    echo "Copying $(print_color "36" "$SRC_FILE") to $(print_color "36" "$DEST_FILE")"
+    cp "$SRC_FILE" "$DEST_FILE"
   fi
-
-  # Copy as file (explicitly specifying full dest path)
-  echo "Copying $(print_color "36" "$SRC_FILE") to $(print_color "36" "$DEST_FILE")"
-  cp "$SRC_FILE" "$DEST_FILE"
 done
 
 # Copy directories
@@ -93,13 +128,19 @@ for dir in "${DIRS_TO_COPY[@]}"; do
 
   # Check if destination already exists
   if [[ -e "$DEST_DIR" ]]; then
-    echo "$(print_color "33" "Warning:") $(print_color "36" "$DEST_DIR") already exists, exiting..."
-    exit 1
+    if prompt_user "$DEST_DIR" "directory"; then
+      # User chose to overwrite - remove existing directory first
+      echo "Removing existing directory $(print_color "36" "$DEST_DIR")"
+      rm -rf "$DEST_DIR"
+      echo "Copying directory $(print_color "36" "$SRC_DIR") to $(print_color "36" "$DEST_DIR")"
+      cp -r "$SRC_DIR" "$DEST_DIR"
+    fi
+    # If user chose to skip, continue to next directory
+  else
+    # Copy directory recursively
+    echo "Copying directory $(print_color "36" "$SRC_DIR") to $(print_color "36" "$DEST_DIR")"
+    cp -r "$SRC_DIR" "$DEST_DIR"
   fi
-
-  # Copy directory recursively
-  echo "Copying directory $(print_color "36" "$SRC_DIR") to $(print_color "36" "$DEST_DIR")"
-  cp -r "$SRC_DIR" "$DEST_DIR"
 done
 
 echo "Files and directories copied to $(print_color "36" "$TARGET_DIR")"
