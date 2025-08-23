@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     vim \
     zsh \
+    ipset \
     iptables \
     iproute2 \
     net-tools \
