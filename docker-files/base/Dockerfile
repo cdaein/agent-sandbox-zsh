@@ -13,6 +13,10 @@ RUN apt-get update && apt-get install -y \
     wget \
     vim \
     zsh \
+    iptables \
+    iproute2 \
+    net-tools \
+    dnsutils \
     # delete cache
     && rm -rf /var/lib/apt/lists/*
 
@@ -59,7 +63,18 @@ ENV PATH="$HOME/.local/bin:$PATH"
 # Without this, file copying doesn't work properly
 RUN mkdir -p /root/.claude
 
+# Create firewall configuration directory and script
+RUN mkdir -p /etc/firewall
+COPY firewall-setup.sh /etc/firewall/firewall-setup.sh
+RUN chmod +x /etc/firewall/firewall-setup.sh
+
+# Copy local allowed-domains.txt to container
+COPY allowed-domains.txt /etc/firewall/allowed-domains.txt
+
+# Add firewall alias
+RUN echo 'alias firewall="/etc/firewall/firewall-setup.sh"' >> /root/.zshrc
+
 WORKDIR /project
 
-# start in zsh shell
-CMD ["zsh"]
+# start in zsh shell with firewall initialization
+CMD ["/bin/bash", "-c", "/etc/firewall/firewall-setup.sh && exec zsh"]
