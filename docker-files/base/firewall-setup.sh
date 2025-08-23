@@ -23,9 +23,11 @@ test_domain() {
     local domain="${1:-github.com}"
     echo "Testing connection to: $domain"
     # First test DNS resolution
-    local ip=$(dig +short $domain 2>/dev/null | head -1)
+    local ip=$(dig +short $domain 2>/dev/null | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
     if [ -z "$ip" ]; then
-        echo "FAILED: Could not resolve $domain"
+        echo "FAILED: Could not resolve $domain to a valid IP"
+        echo "DNS resolution output:"
+        dig +short $domain 2>&1
         return 1
     fi
     echo "Resolved $domain to $ip"
@@ -70,7 +72,25 @@ setup_firewall() {
     iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
     iptables -A OUTPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
 
-    # Allow DNS
+    # Allow localhost/127.0.0.1 access
+    iptables -A INPUT -s 127.0.0.1 -j ACCEPT
+    iptables -A OUTPUT -d 127.0.0.1 -j ACCEPT
+
+    # Allow DNS (multiple common DNS servers)
+    # Docker internal DNS (127.0.0.11)
+    iptables -A OUTPUT -p udp -d 127.0.0.11 --dport 53 -j ACCEPT
+    iptables -A INPUT -p udp -s 127.0.0.11 --sport 53 -j ACCEPT
+    
+    # REVIEW: is it necessary to add these DNS?
+    # Google DNS
+    iptables -A OUTPUT -p udp -d 8.8.8.8 --dport 53 -j ACCEPT
+    iptables -A INPUT -p udp -s 8.8.8.8 --sport 53 -j ACCEPT
+    iptables -A OUTPUT -p udp -d 8.8.4.4 --dport 53 -j ACCEPT
+    iptables -A INPUT -p udp -s 8.8.4.4 --sport 53 -j ACCEPT
+    # Cloudflare DNS
+    iptables -A OUTPUT -p udp -d 1.1.1.1 --dport 53 -j ACCEPT
+    iptables -A INPUT -p udp -s 1.1.1.1 --sport 53 -j ACCEPT
+    # Also allow any DNS on port 53 (fallback)
     iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
     iptables -A INPUT -p udp --sport 53 -j ACCEPT
 
