@@ -38,8 +38,8 @@ services:
       # Claude config file
       # (NOTE: this is temporary hack b/c Claude doesn't support API key authentication and I have to sign in and create token everytime)
       - ./.claude-settings.json:/root/.claude/settings.json
-      # Firewall allowed domains file
-      - ./allowed-domains.txt:/etc/firewall/allowed-domains.txt
+      # Firewall (mount the folder; single file mount and editing doesn't work well)
+      - ./firewall-config:/etc/firewall
     # Equivalent to -it
     stdin_open: true
     tty: true

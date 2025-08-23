@@ -55,6 +55,11 @@ FILES_TO_COPY=(
   "docker-files/project/allowed-domains.txt"
 )
 
+# Directories to copy
+DIRS_TO_COPY=(
+  "docker-files/project/firewall-config"
+)
+
 for file in "${FILES_TO_COPY[@]}"; do
   SRC_FILE="$SCRIPT_DIR/$file"
   DEST_FILE="$TARGET_DIR/$(basename "$file")"
@@ -76,7 +81,29 @@ for file in "${FILES_TO_COPY[@]}"; do
   cp "$SRC_FILE" "$DEST_FILE"
 done
 
-echo "Files copied to $(print_color "36" "$TARGET_DIR")"
+# Copy directories
+for dir in "${DIRS_TO_COPY[@]}"; do
+  SRC_DIR="$SCRIPT_DIR/$dir"
+  DEST_DIR="$TARGET_DIR/$(basename "$dir")"
+
+  # Check if source directory exists
+  if [[ ! -d "$SRC_DIR" ]]; then
+    echo "$(print_color "33" "Warning:") $(print_color "36" "$SRC_DIR") directory not found, exiting..."
+    exit 1
+  fi
+
+  # Check if destination already exists
+  if [[ -e "$DEST_DIR" ]]; then
+    echo "$(print_color "33" "Warning:") $(print_color "36" "$DEST_DIR") already exists, exiting..."
+    exit 1
+  fi
+
+  # Copy directory recursively
+  echo "Copying directory $(print_color "36" "$SRC_DIR") to $(print_color "36" "$DEST_DIR")"
+  cp -r "$SRC_DIR" "$DEST_DIR"
+done
+
+echo "Files and directories copied to $(print_color "36" "$TARGET_DIR")"
 
 ###### Stage 2. build base image ##############################################################
 
