@@ -10,20 +10,19 @@ I set it up to support my Typescript/Nodejs projects. You can customize to meet 
 
 ## How to use
 
-1. `git clone <this repo>` into wherever you store scripts.
-1. Run `<script dir path>/agent-sandbox.zsh <target dir>`
-   - For example, `cd` into your project directory, and run `<script dir path>/agent-sandbox.zsh .` (don't forget the dot at the end)
-   - If it says no permission, update the execute permission: `chmod +x agent-sandbox.zsh`
-1. The script copies a few files into your project directory. (ie. `.dockerignore`, `docker-compose.yml`, `.claude-settings.json`)
-1. The script will also build a base Docker image called `agent-sandbox`.
+1. `git clone <this repo>` into where you usually store scripts.
+1. Create an alias in your `.zshrc` to make it easy to use the script. For example, `echo 'alias agent-sandbox="~/<script dir>/agent-sandbox/agent-sandbox.zsh"' >> ~/.zshrc`. Then, `exec zsh` to reload the shell.
+1. Run `agent-sandbox <target dir>`
+   - For example, `cd` into your project directory, and run `agent-sandbox .` (don't forget the dot at the end)
+   - If it says no permission, update the execute permission: `chmod +x ~/<script dir>/agent-sandbox/agent-sandbox.zsh`
+1. The script copies a few files into your project directory. (ie. `.dockerignore`, `docker-compose.yml`, `.claude-settings.json`, `firewall-config/`)
+1. The script will also build the base Docker image called `agent-sandbox`.
 1. If the script exits successfully, run `docker compose run --rm --service-ports dev` to access the container shell.
    - The whole project directory is mounted for the container to access (read and write).
    - It should not have access to files outside the mounted paths.
-1. Assuming you are working on a JS project with Vite dev server, once you are inside the container shell (indicated by the container ID on the prompt), `npm install` and then `npm run dev -- --host` to run the dev server.
-1. To open another container shell, open a new terminal window and run `docker compose exec -it dev zsh`. You can check if the container IDs are the same.
+1. Assuming you are working on a JS/TS project with Vite dev server, once you are inside the container shell (indicated by the container ID on the prompt), `npm install` and then `npm run dev -- --host` to run the dev server.
+1. To open another container shell, open a new terminal window and run `docker compose exec -it dev zsh`. You can check if the container IDs are the same with the CLI session.
 1. You can use any code editor from your host file system and do everything you need to do while running coding agents within the container.
-
-> Tip: Create an alias in your `.zshrc` to make it easy to use the script. For example, `alias agent-sandbox="~/<script dir>/agent-sandbox/agent-sandbox.zsh"`. Then, `exec zsh` to reload the shell. Now, from anywhere in your system, `agent-sandbox <target dir>` should work.
 
 ## Script Customization
 
@@ -36,11 +35,11 @@ This is where you include any tools you need for all your agent coding projects.
 - This is where you can create project-level configs. I use the Vite dev server and it maps the port `5173`.
 - Define any environment variables you need here. It'd be best to `export` these variables in your host and load them in instead of hard-coding the values here.
 - You can customize the `volumes` and decide what parts of the host file system the container may have access to.
-- This file is copied to your project when the script runs, so you can edit the copy for each project.
+- This file is copied to your project when the script runs, so you can customize in each project later.
 
 ### Rebuild Docker image
 
-If you made changes to the base image `Dockerfile`, then you will need to rebuild it. Sometimes, caches get in the way of new builds. You can run `<script dir>/agent-sandbox.zsh build` to build the base Docker image with no cache.
+If you made changes to the base image `Dockerfile`, then you will need to rebuild it. Sometimes, caches get in the way of new builds. You can run `agent-sandbox build` to build the base Docker image with no cache.
 
 ## Project Customization
 
@@ -48,7 +47,7 @@ If you made changes to the base image `Dockerfile`, then you will need to rebuil
 
 Add any domains you allow the agents to access.
 
-You can also add domains within the container shell. Try `firewall --help` to get more info.
+You can also add/remove domains within the container shell. Try `firewall --help` to get more info.
 
 ## Supported Agents
 
