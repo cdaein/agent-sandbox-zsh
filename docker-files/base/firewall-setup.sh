@@ -20,17 +20,37 @@ list_domains() {
 }
 
 test_domain() {
-    curl -s --connect-timeout 5 "https://${1:-github.com}" >/dev/null && echo "OK" || echo "FAILED"
+    local domain="${1:-github.com}"
+    echo "Testing connection to: $domain"
+    # First test DNS resolution
+    local ip=$(dig +short $domain 2>/dev/null | head -1)
+    if [ -z "$ip" ]; then
+        echo "FAILED: Could not resolve $domain"
+        return 1
+    fi
+    echo "Resolved $domain to $ip"
+    # Test HTTP connection
+    curl -s --connect-timeout 5 "https://$domain" >/dev/null && echo "OK" || echo "FAILED"
 }
 
 disable_firewall() {
+    echo "Disabling firewall..."
     iptables -F
+    iptables -X
+    iptables -t nat -F
+    iptables -t nat -X
+    iptables -t mangle -F
+    iptables -t mangle -X
     iptables -P INPUT ACCEPT
+    iptables -P FORWARD ACCEPT
     iptables -P OUTPUT ACCEPT
+    echo "Firewall disabled - all traffic allowed"
 }
 
 # Setup firewall
 setup_firewall() {
+    echo "Setting up firewall..."
+    
     # Flush existing rules
     iptables -F
     iptables -X
@@ -56,19 +76,30 @@ setup_firewall() {
 
     # Allow HTTP/HTTPS to allowed domains
     if [ -f "/etc/firewall/allowed-domains.txt" ]; then
+        echo "Processing allowed domains..."
         while read -r domain; do
             if [ -n "$domain" ] && [[ ! "$domain" =~ ^[[:space:]]*# ]]; then
-                for ip in $(dig +short $domain 2>/dev/null | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'); do
-                    iptables -A OUTPUT -p tcp -d "$ip" --dport 80 -j ACCEPT
-                    iptables -A INPUT -p tcp -s "$ip" --sport 80 -j ACCEPT
-                    iptables -A OUTPUT -p tcp -d "$ip" --dport 443 -j ACCEPT
-                    iptables -A INPUT -p tcp -s "$ip" --sport 443 -j ACCEPT
-                    iptables -A OUTPUT -p tcp -d "$ip" --dport 22 -j ACCEPT
-                    iptables -A INPUT -p tcp -s "$ip" --sport 22 -j ACCEPT
-                done
+                # Remove inline comments
+                domain=$(echo "$domain" | sed 's/#.*$//' | xargs)
+                if [ -n "$domain" ]; then
+                    echo "Adding rules for domain: $domain"
+                    for ip in $(dig +short $domain 2>/dev/null | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'); do
+                        echo "  - Adding rules for IP: $ip"
+                        iptables -A OUTPUT -p tcp -d "$ip" --dport 80 -j ACCEPT
+                        iptables -A INPUT -p tcp -s "$ip" --sport 80 -j ACCEPT
+                        iptables -A OUTPUT -p tcp -d "$ip" --dport 443 -j ACCEPT
+                        iptables -A INPUT -p tcp -s "$ip" --sport 443 -j ACCEPT
+                        iptables -A OUTPUT -p tcp -d "$ip" --dport 22 -j ACCEPT
+                        iptables -A INPUT -p tcp -s "$ip" --sport 22 -j ACCEPT
+                    done
+                fi
             fi
         done < "/etc/firewall/allowed-domains.txt"
+    else
+        echo "Warning: /etc/firewall/allowed-domains.txt not found"
     fi
+    
+    echo "Firewall setup complete"
 }
 
 # Command line interface
