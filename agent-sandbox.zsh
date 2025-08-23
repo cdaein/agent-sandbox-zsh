@@ -11,36 +11,29 @@ print_color() {
 # Function to prompt user for action when file/directory already exists
 prompt_user() {
   local dest_path="$1"
-  local item_type="$2"  # "file" or "directory"
+  local item_type="$2"
   
-  echo "$(print_color "33" "Warning:") $(print_color "36" "$dest_path") already exists."
+  echo -n "$(print_color "33" "Warning:") $(print_color "36" "$dest_path") already exists. Choose action: $(print_color "32" "[o]")verwrite, $(print_color "32" "[s]")kip, $(print_color "32" "[a]")bort: "
+  read -r choice
   
-  while true; do
-    echo "Choose an action:"
-    echo "  $(print_color "32" "o") - Overwrite"
-    echo "  $(print_color "32" "s") - Skip"
-    echo "  $(print_color "32" "a") - Abort (exit script)"
-    echo -n "Enter choice (o/s/a): "
-    read -r choice
-    
-    case $choice in
-      [Oo])
-        echo "Overwriting $(print_color "36" "$dest_path")..."
-        return 0  # Continue with overwrite
-        ;;
-      [Ss])
-        echo "Skipping $(print_color "36" "$dest_path")..."
-        return 1  # Skip this item
-        ;;
-      [Aa])
-        echo "Aborting..."
-        exit 1
-        ;;
-      *)
-        echo "Invalid choice. Please enter 'o', 's', or 'a'."
-        ;;
-    esac
-  done
+  case $choice in
+    [Oo]|"")
+      echo "Overwriting $(print_color "36" "$dest_path")..."
+      return 0
+      ;;
+    [Ss])
+      echo "Skipping $(print_color "36" "$dest_path")..."
+      return 1
+      ;;
+    [Aa])
+      echo "Aborting..."
+      exit 1
+      ;;
+    *)
+      echo "Invalid choice. Please enter 'o', 's', or 'a'."
+      prompt_user "$dest_path" "$item_type"  # Recursive call for retry
+      ;;
+  esac
 }
 
 SCRIPT_DIR="$(cd "$(dirname "${(%):-%N}")" && pwd)"
