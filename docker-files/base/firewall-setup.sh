@@ -76,23 +76,12 @@ setup_firewall() {
     iptables -A INPUT -s 127.0.0.1 -j ACCEPT
     iptables -A OUTPUT -d 127.0.0.1 -j ACCEPT
 
-    # Allow DNS (multiple common DNS servers)
-    # Docker internal DNS (127.0.0.11)
-    iptables -A OUTPUT -p udp -d 127.0.0.11 --dport 53 -j ACCEPT
-    iptables -A INPUT -p udp -s 127.0.0.11 --sport 53 -j ACCEPT
-    
-    # REVIEW: is it necessary to add these DNS?
-    # Google DNS
-    iptables -A OUTPUT -p udp -d 8.8.8.8 --dport 53 -j ACCEPT
-    iptables -A INPUT -p udp -s 8.8.8.8 --sport 53 -j ACCEPT
-    iptables -A OUTPUT -p udp -d 8.8.4.4 --dport 53 -j ACCEPT
-    iptables -A INPUT -p udp -s 8.8.4.4 --sport 53 -j ACCEPT
-    # Cloudflare DNS
-    iptables -A OUTPUT -p udp -d 1.1.1.1 --dport 53 -j ACCEPT
-    iptables -A INPUT -p udp -s 1.1.1.1 --sport 53 -j ACCEPT
-    # Also allow any DNS on port 53 (fallback)
+    # Allow DNS - use a more permissive approach for Docker
+    # Allow all DNS traffic on port 53 (Docker needs this)
     iptables -A OUTPUT -p udp --dport 53 -j ACCEPT
     iptables -A INPUT -p udp --sport 53 -j ACCEPT
+    iptables -A OUTPUT -p tcp --dport 53 -j ACCEPT
+    iptables -A INPUT -p tcp --sport 53 -j ACCEPT
 
     # Allow HTTP/HTTPS to allowed domains
     if [ -f "/etc/firewall/allowed-domains.txt" ]; then
