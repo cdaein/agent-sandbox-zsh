@@ -42,6 +42,7 @@ PROMPT="%F{red}[\$(hostname)]%f ${PROMPT}"
 
 # Add useful aliases
 alias cl="clear"
+alias v="vim"
 
 # Anything else to append to .zshrc
 # (But, you can run any shell commands from host terminal as well)
