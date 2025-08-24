@@ -13,3 +13,17 @@ sentry.io # Error reporting
 www.googleapis.com 
 apis.google.com 
 gemini.google.com 
+
+# Cursor
+# https://cursor.com/security#client-security
+api2.cursor.sh # Used for most API requests.
+api3.cursor.sh # Used for Cursor Tab requests (HTTP/2 only).
+repo42.cursor.sh # Used for codebase indexing (HTTP/2 only).
+api4.cursor.sh
+us-asia.gcpp.cursor.sh
+us-eu.gcpp.cursor.sh
+us-only.gcpp.cursor.sh # Used for Cursor Tab requests depending on your location (HTTP/2 only).
+marketplace.cursorapi.com
+cursor-cdn.com
+downloads.cursor.com
+anysphere-binaries.s3.us-east-1.amazonaws.com # Used for client updates and for downloading extensions from the extension marketplace.
