@@ -5,3 +5,11 @@
 api.anthropic.com # Claude API endpoints
 statsig.anthropic.com # Telemetry and metrics
 sentry.io # Error reporting
+
+# Google Gemini 
+# https://cloud.google.com/gemini/docs/discover/set-up-gemini#configure-firewall-API-traffic
+# https://github.com/google-gemini/gemini-cli/issues/4552
+# https://support.google.com/a/answer/15627649?hl=en
+www.googleapis.com 
+apis.google.com 
+gemini.google.com 
