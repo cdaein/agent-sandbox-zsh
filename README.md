@@ -53,15 +53,17 @@ You can also add/remove domains within the container shell. Try `firewall --help
 
 ### Claude Code
 
-Create `ANTHROPIC_API_KEY` and add it to your host environment variables (ex. in `.zshrc`).
+Create `ANTHROPIC_API_KEY` and add it to your host environment variables (ex. in `.zshrc`). Run `claude` in the container shell and choose `Yes` to use the API key.
+
+There' [an open issue](https://github.com/anthropics/claude-code/issues/4733) with using API key. Claude Code doesn't support authenticating with API key (as of 2025.08). So, in a container environment, you have to authenticate using browser and create a new token (and a new api key) every time. To avoid this annoyance, I am copying the `settings.json` that contains the `ANTHROPIC_API_KEY` from the host system. When Claude Code detects this file, it will sign you in. But, this is a hack and this method may not be supported in the future. Hopefully, Anthropic will allow signing in with API key like Gemini already does.
 
 ### Cursor CLI
 
-Get your `CURSOR_API_KEY` from the user account integrations page and add it to your host environment variables (ex. in `.zshrc`).
+Get your `CURSOR_API_KEY` from the user account integrations page and add it to your host environment variables (ex. in `.zshrc`). Run `cursor-agent` in the container shell.
 
 ### Gemini CLI
 
-Create `GEMINI_API_KEY` and add it to your host environment variables (ex. in `.zshrc`).
+Create `GEMINI_API_KEY` and add it to your host environment variables (ex. in `.zshrc`). Run `gemini` in the container shell and choose `Use Gemini API Key`.
 
 ## Quirks
 
@@ -91,10 +93,6 @@ If you use Typescript, also update the `tsconfig.json`:
   }
 }
 ```
-
-### Claude Code Authentication
-
-Claude Code doesn't support authenticating with API key (as of 2025.08). So, in a container environment, you have to authenticate using browser and create a new token (and a new api key) every time. To avoid this annoyance, I am copying the `settings.json` that contains the `ANTHROPIC_API_KEY` from the host system. When Claude Code detects this file, it will sign you in. But, this is a hack and this method may not be supported in the future. Hopefully, Anthropic will allow signing in with API key like Gemini already does.
 
 ## License
 
